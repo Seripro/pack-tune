@@ -1,7 +1,7 @@
-export const Trips = ()=>{
-    return(
-        <>
-        <p>Trips</p>
-        </>
-    )
-}
+export const Trips = () => {
+  return (
+    <>
+      <p>Trips</p>
+    </>
+  );
+};
