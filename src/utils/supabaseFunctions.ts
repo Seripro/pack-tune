@@ -35,3 +35,23 @@ export const insertTripItems = async (tripItems: InsertTripItemsType[]) => {
   const { error } = await supabase.from("trip_items").insert(tripItems);
   if (error) throw error;
 };
+
+export const getTripByTitleAndPeriod = async (
+  title: string,
+  start_date: string,
+  end_date: string,
+  user_id: string,
+) => {
+  const { data, error } = await supabase
+    .from("trips")
+    .select("*")
+    .eq("title", title)
+    .eq("start_date", start_date)
+    .eq("end_date", end_date)
+    .eq("user_id", user_id);
+  if (error) {
+    throw error;
+  } else {
+    return data;
+  }
+};
