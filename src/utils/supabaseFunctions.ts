@@ -1,6 +1,6 @@
 import { supabase } from "./supabase";
 
-export const getAllTrips = async () => {
+export const getTripsByUserId = async () => {
   const { data, error } = await supabase.from("trips").select("*");
   if (error) {
     throw error;

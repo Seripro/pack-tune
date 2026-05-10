@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getAllTrips } from "../utils/supabaseFunctions";
+import { getTripsByUserId } from "../utils/supabaseFunctions";
 import type { TripsType } from "../types/trips";
 import { TripCard } from "../components/TripCard";
 import { useNavigate } from "react-router-dom";
@@ -10,7 +10,7 @@ export const Trips = () => {
   useEffect(() => {
     const getTrips = async () => {
       try {
-        const tripDatas = await getAllTrips();
+        const tripDatas = await getTripsByUserId();
         setTrips(tripDatas);
       } catch (e) {
         console.log(e);
