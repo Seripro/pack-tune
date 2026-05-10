@@ -3,8 +3,11 @@ import type { InsertTripItemsType } from "../types/trip_items";
 import type { InsertTripsType } from "../types/trips";
 import { supabase } from "./supabase";
 
-export const getTripsByUserId = async () => {
-  const { data, error } = await supabase.from("trips").select("*");
+export const getTripsByUserId = async (user_id: string) => {
+  const { data, error } = await supabase
+    .from("trips")
+    .select("*")
+    .eq("user_id", user_id);
   if (error) {
     throw error;
   } else {
@@ -12,8 +15,11 @@ export const getTripsByUserId = async () => {
   }
 };
 
-export const getItemsByUserId = async () => {
-  const { data, error } = await supabase.from("items").select("*");
+export const getItemsByUserId = async (user_id: string) => {
+  const { data, error } = await supabase
+    .from("items")
+    .select("*")
+    .eq("user_id", user_id);
   if (error) {
     throw error;
   } else {
