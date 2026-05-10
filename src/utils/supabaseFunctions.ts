@@ -8,3 +8,12 @@ export const getTripsByUserId = async () => {
     return data;
   }
 };
+
+export const getItemsByUserId = async () => {
+  const { data, error } = await supabase.from("items").select("*");
+  if (error) {
+    throw error;
+  } else {
+    return data;
+  }
+};
