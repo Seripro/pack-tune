@@ -32,7 +32,7 @@ export const NewTrips = () => {
   useEffect(() => {
     const getItems = async () => {
       try {
-        const itemDatas = await getItemsByUserId();
+        const itemDatas = await getItemsByUserId(user_id);
         const newSuggestedItems = [...(suggestedItems || [])];
         const newPotentialItems = [...(potentialItems || [])];
         itemDatas.map((item) => {
@@ -127,7 +127,7 @@ export const NewTrips = () => {
     };
     const addTripItems = async () => {
       try {
-        const items = await getItemsByUserId();
+        const items = await getItemsByUserId(user_id);
         console.log(`items:${items}`);
         let itemdatas = items.filter((item) => newItems.includes(item.name));
         itemdatas = itemdatas.concat(suggestedItems || []);
