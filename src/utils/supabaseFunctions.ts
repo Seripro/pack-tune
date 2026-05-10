@@ -61,3 +61,25 @@ export const getTripByTitleAndPeriod = async (
     return data;
   }
 };
+
+export const getItemsByTripId = async (trip_id: string) => {
+  const { data, error } = await supabase
+    .from("trip_items")
+    .select(
+      `
+    item_id,
+    is_checked,
+    items (
+      id,
+      name
+    )
+  `,
+    )
+    .eq("trip_id", trip_id);
+
+  if (error) {
+    throw error;
+  } else {
+    return data;
+  }
+};
