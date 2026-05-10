@@ -83,3 +83,16 @@ export const getItemsByTripId = async (trip_id: string) => {
     return data;
   }
 };
+
+export const updateItems = async (
+  is_checked: boolean,
+  item_id: string,
+  trip_id: string,
+) => {
+  const { error } = await supabase
+    .from("trip_items")
+    .update({ is_checked: is_checked })
+    .eq("item_id", item_id)
+    .eq("trip_id", trip_id);
+  if (error) throw error;
+};
