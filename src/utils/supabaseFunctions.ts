@@ -1,3 +1,4 @@
+import type { InsertItemsType } from "../types/items";
 import type { InsertTripsType } from "../types/trips";
 import { supabase } from "./supabase";
 
@@ -21,5 +22,10 @@ export const getItemsByUserId = async () => {
 
 export const insertTrip = async (trip: InsertTripsType) => {
   const { error } = await supabase.from("trips").insert(trip);
+  if (error) throw error;
+};
+
+export const insertItems = async (items: InsertItemsType[]) => {
+  const { error } = await supabase.from("items").insert(items);
   if (error) throw error;
 };
