@@ -8,8 +8,8 @@ import {
   incrementUseful,
   updateCompleted,
 } from "../utils/supabaseFunctions";
-
-const user_id = "f1bdb7e9-102b-403a-9e7e-62801081d3a6";
+import { supabase } from "../utils/supabase";
+import type { User } from "@supabase/supabase-js";
 
 export const FeedBack = () => {
   const { tripId } = useParams();
@@ -18,26 +18,31 @@ export const FeedBack = () => {
   const [unusedIds, setUnusedIds] = useState<string[]>([]);
   const [usefulIds, setUsefulIds] = useState<string[]>([]);
   const [potentialItems, setPotentialItems] = useState<ItemsType[]>();
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const tripItems = await getItemsForAllColumnByTripId(tripId!);
-        const itemsData = tripItems.map((item) => item.items);
-        setItems(itemsData);
+        const { data } = await supabase.auth.getUser();
+        setUser(data.user);
+        if (data.user) {
+          const tripItems = await getItemsForAllColumnByTripId(tripId!);
+          const itemsData = tripItems.map((item) => item.items);
+          setItems(itemsData);
 
-        const allItems = await getItemsByUserId(user_id);
-        const filtered = allItems.filter(
-          (item) => !itemsData.some((a) => a.id === item.id),
-        );
-        setPotentialItems(filtered);
+          const allItems = await getItemsByUserId(data.user.id);
+          const filtered = allItems.filter(
+            (item) => !itemsData.some((a) => a.id === item.id),
+          );
+          setPotentialItems(filtered);
+        }
       } catch (e) {
         console.log(e);
       }
     };
 
     fetchData();
-  }, [tripId]);
+  }, [tripId, user]);
 
   const handleToggleUnused = (id: string) => {
     setUnusedIds((prev) =>

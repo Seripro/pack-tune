@@ -4,23 +4,28 @@ import type { TripsType } from "../types/trips";
 import { TripCard } from "../components/TripCard";
 import { Link, useNavigate } from "react-router-dom";
 import { Footer } from "../components/Footer";
-
-const user_id = "f1bdb7e9-102b-403a-9e7e-62801081d3a6";
+import { supabase } from "../utils/supabase";
+import type { User } from "@supabase/supabase-js";
 
 export const Trips = () => {
+  const [user, setUser] = useState<User | null>(null);
   const [trips, setTrips] = useState<TripsType[]>();
   const navigate = useNavigate();
   useEffect(() => {
-    const getTrips = async () => {
+    const fetchData = async () => {
+      const { data } = await supabase.auth.getUser();
+      setUser(data.user);
       try {
-        const tripDatas = await getTripsByUserId(user_id);
-        setTrips(tripDatas);
+        if (data.user) {
+          const tripDatas = await getTripsByUserId(data.user?.id);
+          setTrips(tripDatas);
+        }
       } catch (e) {
         console.log(e);
       }
     };
-    getTrips();
-  }, []);
+    fetchData();
+  }, [user]);
 
   return (
     <>

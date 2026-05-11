@@ -7,8 +7,8 @@ import {
   updateItems,
 } from "../utils/supabaseFunctions";
 import type { ItemDetailType } from "../types/items";
-
-const user_id = "f1bdb7e9-102b-403a-9e7e-62801081d3a6";
+import { supabase } from "../utils/supabase";
+import type { User } from "@supabase/supabase-js";
 
 export const TripDetail = () => {
   const { tripId } = useParams();
@@ -18,6 +18,7 @@ export const TripDetail = () => {
 
   const [items, setItems] = useState<ItemDetailType[]>();
   const [inputItem, setInputItem] = useState<string>("");
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const getItems = async () => {
@@ -26,7 +27,12 @@ export const TripDetail = () => {
         setItems(newItems);
       }
     };
+    const fetchData = async () => {
+      const { data } = await supabase.auth.getUser();
+      setUser(data.user);
+    };
     getItems();
+    fetchData();
   }, []);
 
   const handleCheck = async (
@@ -73,18 +79,22 @@ export const TripDetail = () => {
   const onClickAdd = async () => {
     const addItems = async () => {
       try {
-        const data = await insertItems([{ user_id: user_id, name: inputItem }]);
-        setItems([
-          ...(items || []),
-          {
-            item_id: data[0].id,
-            is_checked: false,
-            items: {
-              id: data[0].id,
-              name: data[0].name,
+        if (user) {
+          const data = await insertItems([
+            { user_id: user.id, name: inputItem },
+          ]);
+          setItems([
+            ...(items || []),
+            {
+              item_id: data[0].id,
+              is_checked: false,
+              items: {
+                id: data[0].id,
+                name: data[0].name,
+              },
             },
-          },
-        ]);
+          ]);
+        }
       } catch (e) {
         console.log(e);
       }

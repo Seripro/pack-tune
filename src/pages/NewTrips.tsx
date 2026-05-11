@@ -11,9 +11,10 @@ import {
 import type { ItemsType } from "../types/items";
 import { ja } from "date-fns/locale/ja";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../utils/supabase";
+import type { User } from "@supabase/supabase-js";
 
 const SUGGEST_BORDER: number = 3;
-const user_id = "f1bdb7e9-102b-403a-9e7e-62801081d3a6";
 registerLocale("ja", ja);
 
 export const NewTrips = () => {
@@ -26,25 +27,30 @@ export const NewTrips = () => {
   const [potentialItems, setPotentialItems] = useState<ItemsType[]>();
   const [newItem, setNewItem] = useState<string>("");
   const [newItems, setNewItems] = useState<string[]>([]);
+  const [user, setUser] = useState<User | null>(null);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     const getItems = async () => {
       try {
-        const itemDatas = await getItemsByUserId(user_id);
-        const newSuggestedItems = [...(suggestedItems || [])];
-        const newPotentialItems = [...(potentialItems || [])];
-        itemDatas.map((item) => {
-          if (item.useful_count - item.unused_count >= SUGGEST_BORDER) {
-            newSuggestedItems.push(item);
-          } else {
-            newPotentialItems.push(item);
-          }
-        });
-        setItems(itemDatas);
-        setSuggestedItems(newSuggestedItems);
-        setPotentialItems(newPotentialItems);
+        const { data } = await supabase.auth.getUser();
+        setUser(data.user);
+        if (data.user) {
+          const itemDatas = await getItemsByUserId(data.user?.id);
+          const newSuggestedItems = [...(suggestedItems || [])];
+          const newPotentialItems = [...(potentialItems || [])];
+          itemDatas.map((item) => {
+            if (item.useful_count - item.unused_count >= SUGGEST_BORDER) {
+              newSuggestedItems.push(item);
+            } else {
+              newPotentialItems.push(item);
+            }
+          });
+          setItems(itemDatas);
+          setSuggestedItems(newSuggestedItems);
+          setPotentialItems(newPotentialItems);
+        }
       } catch (e) {
         console.log(e);
       }
@@ -107,7 +113,7 @@ export const NewTrips = () => {
     const addTrip = async () => {
       try {
         const trip = {
-          user_id: user_id,
+          user_id: user?.id,
           title: title,
           start_date: `${startDate?.getFullYear()}-${(startDate?.getMonth() ?? 0) + 1}-${startDate?.getDate()}`,
           end_date: `${startDate?.getFullYear()}-${(endDate?.getMonth() ?? 0) + 1}-${endDate?.getDate()}`,
@@ -119,28 +125,40 @@ export const NewTrips = () => {
     };
     const addItems = async () => {
       try {
-        const data = newItems.map((item) => ({ name: item, user_id: user_id }));
-        await insertItems(data);
+        if (user) {
+          const data = newItems.map((item) => ({
+            name: item,
+            user_id: user.id,
+          }));
+          await insertItems(data);
+        }
       } catch (e) {
         console.log(e);
       }
     };
     const addTripItems = async () => {
       try {
-        const items = await getItemsByUserId(user_id);
-        console.log(`items:${items}`);
-        let itemdatas = items.filter((item) => newItems.includes(item.name));
-        itemdatas = itemdatas.concat(suggestedItems || []);
-        const start = `${startDate?.getFullYear()}-${(startDate?.getMonth() ?? 0) + 1}-${startDate?.getDate()}`;
-        const end = `${startDate?.getFullYear()}-${(endDate?.getMonth() ?? 0) + 1}-${endDate?.getDate()}`;
-        const trip = await getTripByTitleAndPeriod(title, start, end, user_id);
-        console.log(trip);
-        console.log(itemdatas);
-        const tripItems = itemdatas.map((item) => ({
-          trip_id: trip[0].id,
-          item_id: item.id,
-        }));
-        await insertTripItems(tripItems);
+        if (user) {
+          const items = await getItemsByUserId(user.id);
+          console.log(`items:${items}`);
+          let itemdatas = items.filter((item) => newItems.includes(item.name));
+          itemdatas = itemdatas.concat(suggestedItems || []);
+          const start = `${startDate?.getFullYear()}-${(startDate?.getMonth() ?? 0) + 1}-${startDate?.getDate()}`;
+          const end = `${startDate?.getFullYear()}-${(endDate?.getMonth() ?? 0) + 1}-${endDate?.getDate()}`;
+          const trip = await getTripByTitleAndPeriod(
+            title,
+            start,
+            end,
+            user.id,
+          );
+          console.log(trip);
+          console.log(itemdatas);
+          const tripItems = itemdatas.map((item) => ({
+            trip_id: trip[0].id,
+            item_id: item.id,
+          }));
+          await insertTripItems(tripItems);
+        }
       } catch (e) {
         console.log(e);
       }
