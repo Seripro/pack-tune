@@ -11,9 +11,11 @@ import { SignOut } from "../components/SignOut";
 export const Trips = () => {
   const [user, setUser] = useState<User | null>(null);
   const [trips, setTrips] = useState<TripsType[]>();
+  const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       const { data } = await supabase.auth.getUser();
       setUser(data.user);
       try {
@@ -23,14 +25,21 @@ export const Trips = () => {
         }
       } catch (e) {
         console.log(e);
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
-  }, [user]);
+  }, []);
+
+  if (loading) return <p>loading...</p>;
 
   return (
     <>
-      <p>Trips</p>
+      <div>
+        <p>Trips</p>
+        <p>ログイン中のユーザー：{user?.email}</p>
+      </div>
       {trips?.map((trip) => {
         return (
           <Link
