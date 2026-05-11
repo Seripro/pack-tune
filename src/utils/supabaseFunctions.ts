@@ -96,3 +96,12 @@ export const updateItems = async (
     .eq("trip_id", trip_id);
   if (error) throw error;
 };
+
+export const deleteTripItem = async (item_id: string, trip_id: string) => {
+  const { error } = await supabase
+    .from("trip_items")
+    .delete()
+    .eq("item_id", item_id)
+    .eq("trip_id", trip_id);
+  if (error) throw error;
+};
