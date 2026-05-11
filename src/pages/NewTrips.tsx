@@ -27,12 +27,14 @@ export const NewTrips = () => {
   const [potentialItems, setPotentialItems] = useState<ItemsType[]>();
   const [newItem, setNewItem] = useState<string>("");
   const [newItems, setNewItems] = useState<string[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     const getItems = async () => {
+      setLoading(true);
       try {
         const { data } = await supabase.auth.getUser();
         setUser(data.user);
@@ -53,6 +55,8 @@ export const NewTrips = () => {
         }
       } catch (e) {
         console.log(e);
+      } finally {
+        setLoading(false);
       }
     };
     getItems();
@@ -168,6 +172,8 @@ export const NewTrips = () => {
     await addTripItems();
     navigate("/trips");
   };
+
+  if (loading) return <p>loading...</p>;
 
   return (
     <div>
