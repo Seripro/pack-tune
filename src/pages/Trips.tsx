@@ -26,7 +26,11 @@ export const Trips = () => {
       <p>Trips</p>
       {trips?.map((trip) => {
         return (
-          <Link to={`${trip.id}`} key={trip.id} state={trip.title}>
+          <Link
+            to={`${trip.id}`}
+            key={trip.id}
+            state={{ title: trip.title, is_completed: trip.is_completed }}
+          >
             <TripCard
               title={trip.title}
               start_date={trip.start_date}
