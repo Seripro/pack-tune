@@ -33,8 +33,12 @@ export const insertTrip = async (trip: InsertTripsType) => {
 };
 
 export const insertItems = async (items: InsertItemsType[]) => {
-  const { error } = await supabase.from("items").insert(items);
-  if (error) throw error;
+  const { data, error } = await supabase.from("items").insert(items).select();
+  if (error) {
+    throw error;
+  } else {
+    return data;
+  }
 };
 
 export const insertTripItems = async (tripItems: InsertTripItemsType[]) => {
