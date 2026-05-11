@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Footer } from "../components/Footer";
 import { supabase } from "../utils/supabase";
 import type { User } from "@supabase/supabase-js";
+import { SignOut } from "../components/SignOut";
 
 export const Trips = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -48,6 +49,7 @@ export const Trips = () => {
       })}
 
       <button onClick={() => navigate("/trips/new")}>新しい旅行</button>
+      <SignOut />
       <Footer />
     </>
   );
