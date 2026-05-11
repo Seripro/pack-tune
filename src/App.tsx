@@ -5,6 +5,7 @@ import { Trips } from "./pages/Trips";
 import { NewTrips } from "./pages/NewTrips";
 import { TripDetail } from "./pages/TripDetail";
 import { FeedBack } from "./pages/FeedBack";
+import { Stats } from "./pages/Stats";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/trips/new" element={<NewTrips />} />
         <Route path="/trips/:tripId" element={<TripDetail />} />
         <Route path="/trips/:tripId/feedback" element={<FeedBack />} />
+        <Route path="/items/stats" element={<Stats />} />
       </Routes>
     </Router>
   );
