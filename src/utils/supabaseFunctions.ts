@@ -88,6 +88,29 @@ export const getItemsByTripId = async (trip_id: string) => {
   }
 };
 
+export const getItemsForAllColumnByTripId = async (trip_id: string) => {
+  const { data, error } = await supabase
+    .from("trip_items")
+    .select(
+      `
+    items (
+      created_at,
+      id,
+      name,
+      unused_count,
+      useful_count,
+      user_id
+    )
+  `,
+    )
+    .eq("trip_id", trip_id);
+  if (error) {
+    throw error;
+  } else {
+    return data;
+  }
+};
+
 export const updateItems = async (
   is_checked: boolean,
   item_id: string,
@@ -108,4 +131,67 @@ export const deleteTripItem = async (item_id: string, trip_id: string) => {
     .eq("item_id", item_id)
     .eq("trip_id", trip_id);
   if (error) throw error;
+};
+
+export const getUsefulCountByItemId = async (item_id: string) => {
+  const { data, error } = await supabase
+    .from("items")
+    .select("useful_count")
+    .eq("id", item_id)
+    .single();
+  if (error) {
+    throw error;
+  } else {
+    return data.useful_count;
+  }
+};
+
+export const updateUsefulCount = async (
+  useful_count: number,
+  item_id: string,
+) => {
+  await supabase
+    .from("items")
+    .update({ useful_count: useful_count + 1 })
+    .eq("id", item_id);
+};
+
+export const incrementUseful = async (item_id: string) => {
+  const useful_count = await getUsefulCountByItemId(item_id);
+
+  if (useful_count !== undefined) {
+    await updateUsefulCount(useful_count, item_id);
+  }
+};
+
+export const getUnusedCountByItemId = async (item_id: string) => {
+  const { data, error } = await supabase
+    .from("items")
+    .select("unused_count")
+    .eq("id", item_id)
+    .single();
+
+  if (error) {
+    throw error;
+  } else {
+    return data.unused_count;
+  }
+};
+
+export const updateUnusedCount = async (
+  unused_count: number,
+  item_id: string,
+) => {
+  await supabase
+    .from("items")
+    .update({ unused_count: unused_count + 1 })
+    .eq("id", item_id);
+};
+
+export const incrementUnused = async (item_id: string) => {
+  const unused_count = await getUnusedCountByItemId(item_id);
+
+  if (unused_count !== undefined) {
+    await updateUnusedCount(unused_count, item_id);
+  }
 };
