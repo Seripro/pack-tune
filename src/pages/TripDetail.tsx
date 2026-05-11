@@ -14,7 +14,7 @@ export const TripDetail = () => {
   const { tripId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const title = location.state;
+  const { title, is_completed } = location.state;
 
   const [items, setItems] = useState<ItemDetailType[]>();
   const [inputItem, setInputItem] = useState<string>("");
@@ -117,9 +117,11 @@ export const TripDetail = () => {
           </div>
         );
       })}
-      <button onClick={() => navigate(`/trips/${tripId}/feedback`)}>
-        旅行を終了する
-      </button>
+      {is_completed ? null : (
+        <button onClick={() => navigate(`/trips/${tripId}/feedback`)}>
+          旅行を終了する
+        </button>
+      )}
     </>
   );
 };
