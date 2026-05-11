@@ -9,10 +9,12 @@ const SUGGEST_BORDER: number = 3;
 
 export const Stats = () => {
   const [frequentItems, setFrequentItems] = useState<ItemsType[]>();
+  const [loading, setLoading] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         const { data } = await supabase.auth.getUser();
         setUser(data.user);
@@ -26,12 +28,18 @@ export const Stats = () => {
         }
       } catch (e) {
         console.log(e);
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
-  }, [user]);
+  }, []);
+
+  if (loading) return <p>loading...</p>;
+
   return (
     <div>
+      <p>ログイン中のユーザー：{user?.email}</p>
       <div>
         <p>よく使うアイテム</p>
         {frequentItems?.map((item) => {
