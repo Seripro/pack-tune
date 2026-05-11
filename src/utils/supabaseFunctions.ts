@@ -195,3 +195,11 @@ export const incrementUnused = async (item_id: string) => {
     await updateUnusedCount(unused_count, item_id);
   }
 };
+
+export const updateCompleted = async (trip_id: string) => {
+  const { error } = await supabase
+    .from("trips")
+    .update({ is_completed: true })
+    .eq("id", trip_id);
+  if (error) throw error;
+};
