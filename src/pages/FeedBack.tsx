@@ -18,10 +18,12 @@ export const FeedBack = () => {
   const [unusedIds, setUnusedIds] = useState<string[]>([]);
   const [usefulIds, setUsefulIds] = useState<string[]>([]);
   const [potentialItems, setPotentialItems] = useState<ItemsType[]>();
+  const [loading, setLoading] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         const { data } = await supabase.auth.getUser();
         setUser(data.user);
@@ -38,11 +40,13 @@ export const FeedBack = () => {
         }
       } catch (e) {
         console.log(e);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchData();
-  }, [tripId, user]);
+  }, [tripId]);
 
   const handleToggleUnused = (id: string) => {
     setUnusedIds((prev) =>
@@ -75,8 +79,11 @@ export const FeedBack = () => {
     }
   };
 
+  if (loading) return <p>loading</p>;
+
   return (
     <>
+      <p>ログイン中のユーザー：{user?.email}</p>
       {items?.map((item) => {
         return (
           <div key={item.id}>
