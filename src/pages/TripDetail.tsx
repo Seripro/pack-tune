@@ -18,6 +18,7 @@ export const TripDetail = () => {
 
   const [items, setItems] = useState<ItemDetailType[]>();
   const [inputItem, setInputItem] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
@@ -27,11 +28,16 @@ export const TripDetail = () => {
         setItems(newItems);
       }
     };
-    const fetchData = async () => {
+    const fetchUser = async () => {
       const { data } = await supabase.auth.getUser();
       setUser(data.user);
     };
-    getItems();
+    const fetchData = async () => {
+      setLoading(true);
+      await getItems();
+      await fetchUser();
+      setLoading(false);
+    };
     fetchData();
   }, []);
 
@@ -102,6 +108,8 @@ export const TripDetail = () => {
     await addItems();
     setInputItem("");
   };
+
+  if (loading) return <p>loading...</p>;
 
   return (
     <>
