@@ -3,6 +3,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   deleteTripItem,
   getItemsByTripId,
+  getTripByTripId,
   insertItems,
   updateItems,
 } from "../utils/supabaseFunctions";
@@ -25,19 +26,42 @@ import {
 } from "@chakra-ui/react";
 import { Checkbox } from "../components/ui/checkbox";
 import { FaTrash, FaPlus } from "react-icons/fa";
+import { NotFound } from "./NotFound";
 
 export const TripDetail = () => {
   const { tripId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const { title, is_completed } = location.state;
+  const { title, is_completed } = location.state || {
+    title: "",
+    is_completed: false,
+  };
 
   const [items, setItems] = useState<ItemDetailType[]>();
   const [inputItem, setInputItem] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
-
+  console.log(tripId);
   useEffect(() => {
+    if (!location.state) {
+      navigate("/404");
+    }
+    const getTrip = async () => {
+      try {
+        console.log(tripId);
+        if (tripId) {
+          const data = await getTripByTripId(tripId);
+          console.log(data);
+          if (!data) {
+            return <NotFound />;
+          }
+        } else {
+          console.log("tripidがありません");
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    };
     const getItems = async () => {
       if (tripId) {
         const newItems = await getItemsByTripId(tripId);
@@ -50,6 +74,7 @@ export const TripDetail = () => {
     };
     const fetchData = async () => {
       setLoading(true);
+      await getTrip();
       await getItems();
       await fetchUser();
       setLoading(false);
