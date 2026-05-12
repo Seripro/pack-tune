@@ -1,4 +1,5 @@
 import { supabase } from "../utils/supabase";
+import { Button } from "@chakra-ui/react";
 
 export const SignOut = () => {
   const handleClick = () => {
@@ -11,5 +12,5 @@ export const SignOut = () => {
     };
     logOut();
   };
-  return <button onClick={handleClick}>ログアウト</button>;
+  return <Button colorPalette="gray" variant="outline" size="sm" onClick={handleClick}>ログアウト</Button>;
 };

@@ -10,6 +10,22 @@ import type { ItemDetailType } from "../types/items";
 import { supabase } from "../utils/supabase";
 import type { User } from "@supabase/supabase-js";
 
+import {
+  Box,
+  Flex,
+  Heading,
+  Text,
+  Input,
+  Button,
+  Stack,
+  Spinner,
+  Card,
+  IconButton,
+  HStack,
+} from "@chakra-ui/react";
+import { Checkbox } from "../components/ui/checkbox";
+import { FaTrash, FaPlus } from "react-icons/fa";
+
 export const TripDetail = () => {
   const { tripId } = useParams();
   const navigate = useNavigate();
@@ -41,13 +57,10 @@ export const TripDetail = () => {
     fetchData();
   }, []);
 
-  const handleCheck = async (
-    item_id: string,
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
+  const handleCheck = async (item_id: string, checked: boolean) => {
     const updateCheck = async () => {
       try {
-        await updateItems(e.target.checked, item_id, tripId!);
+        await updateItems(checked, item_id, tripId!);
         const newItems = [...(items || [])].map((item) => {
           if (item.item_id == item_id) {
             return { ...item, is_checked: !item.is_checked };
@@ -109,37 +122,98 @@ export const TripDetail = () => {
     setInputItem("");
   };
 
-  if (loading) return <p>loading...</p>;
+  if (loading) {
+    return (
+      <Flex justify="center" align="center" minH="50vh">
+        <Spinner size="xl" color="blue.500" />
+      </Flex>
+    );
+  }
 
   return (
-    <>
-      <p>{title}</p>
-      <div>
-        <input
-          placeholder="持ち物を追加"
-          value={inputItem}
-          onChange={handleChange}
-        />
-        <button onClick={onClickAdd}>＋</button>
-      </div>
-      {items?.map((item) => {
-        return (
-          <div key={item.item_id}>
-            <input
-              type="checkbox"
-              checked={item.is_checked}
-              onChange={(e) => handleCheck(item.item_id, e)}
+    <Box>
+      <Flex justify="space-between" align="center" mb={6}>
+        <Heading size="xl">{title}</Heading>
+        {is_completed && (
+          <Text color="green.600" fontWeight="bold">
+            完了済み
+          </Text>
+        )}
+      </Flex>
+
+      <Card.Root mb={6}>
+        <Card.Body>
+          <HStack mb={6}>
+            <Input
+              placeholder="持ち物を追加"
+              value={inputItem}
+              onChange={handleChange}
+              size="lg"
             />
-            <p>{item.items.name}</p>
-            <button onClick={() => onClickDelete(item.item_id)}>削除</button>
-          </div>
-        );
-      })}
-      {is_completed ? null : (
-        <button onClick={() => navigate(`/trips/${tripId}/feedback`)}>
+            <IconButton
+              aria-label="Add Item"
+              colorPalette="blue"
+              size="lg"
+              onClick={onClickAdd}
+            >
+              <FaPlus />
+            </IconButton>
+          </HStack>
+
+          <Stack gap={3}>
+            {items?.map((item) => (
+              <Flex
+                key={item.item_id}
+                justify="space-between"
+                align="center"
+                borderWidth="1px"
+                p={4}
+                borderRadius="md"
+                bg={item.is_checked ? "gray.50" : "white"}
+              >
+                <Checkbox
+                  checked={item.is_checked}
+                  onCheckedChange={(e) =>
+                    handleCheck(item.item_id, !!e.checked)
+                  }
+                >
+                  <Text
+                    fontSize="lg"
+                    textDecor={item.is_checked ? "line-through" : "none"}
+                    color={item.is_checked ? "gray.500" : "black"}
+                  >
+                    {item.items.name}
+                  </Text>
+                </Checkbox>
+                <IconButton
+                  aria-label="Delete"
+                  variant="ghost"
+                  colorPalette="red"
+                  onClick={() => onClickDelete(item.item_id)}
+                >
+                  <FaTrash />
+                </IconButton>
+              </Flex>
+            ))}
+            {items?.length === 0 && (
+              <Text color="gray.500" textAlign="center" py={4}>
+                アイテムがありません
+              </Text>
+            )}
+          </Stack>
+        </Card.Body>
+      </Card.Root>
+
+      {!is_completed && (
+        <Button
+          size="lg"
+          colorPalette="blue"
+          w="full"
+          onClick={() => navigate(`/trips/${tripId}/feedback`)}
+        >
           旅行を終了する
-        </button>
+        </Button>
       )}
-    </>
+    </Box>
   );
 };

@@ -3,13 +3,18 @@ import { getTripsByUserId } from "../utils/supabaseFunctions";
 import type { TripsType } from "../types/trips";
 import { TripCard } from "../components/TripCard";
 import { Link, useNavigate } from "react-router-dom";
-import { Footer } from "../components/Footer";
 import { supabase } from "../utils/supabase";
-import type { User } from "@supabase/supabase-js";
-import { SignOut } from "../components/SignOut";
+import {
+  Box,
+  Button,
+  Flex,
+  Heading,
+  Spinner,
+  Stack,
+} from "@chakra-ui/react";
 
 export const Trips = () => {
-  const [user, setUser] = useState<User | null>(null);
+  
   const [trips, setTrips] = useState<TripsType[]>();
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -17,7 +22,7 @@ export const Trips = () => {
     const fetchData = async () => {
       setLoading(true);
       const { data } = await supabase.auth.getUser();
-      setUser(data.user);
+      
       try {
         if (data.user) {
           const tripDatas = await getTripsByUserId(data.user?.id);
@@ -32,34 +37,57 @@ export const Trips = () => {
     fetchData();
   }, []);
 
-  if (loading) return <p>loading...</p>;
+  if (loading) {
+    return (
+      <Flex justify="center" align="center" minH="50vh">
+        <Spinner size="xl" color="blue.500" />
+      </Flex>
+    );
+  }
 
   return (
-    <>
-      <div>
-        <p>Trips</p>
-        <p>ログイン中のユーザー：{user?.email}</p>
-      </div>
-      {trips?.map((trip) => {
-        return (
-          <Link
-            to={`${trip.id}`}
-            key={trip.id}
-            state={{ title: trip.title, is_completed: trip.is_completed }}
-          >
-            <TripCard
-              title={trip.title}
-              start_date={trip.start_date}
-              end_date={trip.end_date}
-              is_completed={trip.is_completed}
-            />
-          </Link>
-        );
-      })}
+    <Box>
+      <Flex justify="space-between" align="center" mb={6}>
+        <Box>
+          <Heading size="xl" mb={2}>
+            Trips
+          </Heading>
+          
+        </Box>
+        <Stack direction="row" gap={4}>
+          <Button colorPalette="blue" onClick={() => navigate("/trips/new")}>
+            新しい旅行
+          </Button>
+          
+        </Stack>
+      </Flex>
 
-      <button onClick={() => navigate("/trips/new")}>新しい旅行</button>
-      <SignOut />
-      <Footer />
-    </>
+      <Stack gap={4} mb={8}>
+        {trips?.map((trip) => {
+          return (
+            <Box
+              asChild
+              key={trip.id}
+              display="block"
+              _hover={{ textDecor: "none" }}
+            >
+              <Link
+                to={`${trip.id}`}
+                state={{ title: trip.title, is_completed: trip.is_completed }}
+              >
+                <TripCard
+                  title={trip.title}
+                  start_date={trip.start_date}
+                  end_date={trip.end_date}
+                  is_completed={trip.is_completed}
+                />
+              </Link>
+            </Box>
+          );
+        })}
+      </Stack>
+
+      
+    </Box>
   );
 };

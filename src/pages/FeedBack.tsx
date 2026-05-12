@@ -9,7 +9,11 @@ import {
   updateCompleted,
 } from "../utils/supabaseFunctions";
 import { supabase } from "../utils/supabase";
-import type { User } from "@supabase/supabase-js";
+
+import { Box, Flex, Heading, Text, Stack, Spinner, Card } from "@chakra-ui/react";
+import { Checkbox } from "../components/ui/checkbox";
+import { Button } from "../components/ui/button";
+
 
 export const FeedBack = () => {
   const { tripId } = useParams();
@@ -19,14 +23,14 @@ export const FeedBack = () => {
   const [usefulIds, setUsefulIds] = useState<string[]>([]);
   const [potentialItems, setPotentialItems] = useState<ItemsType[]>();
   const [loading, setLoading] = useState<boolean>(false);
-  const [user, setUser] = useState<User | null>(null);
+  
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
         const { data } = await supabase.auth.getUser();
-        setUser(data.user);
+        
         if (data.user) {
           const tripItems = await getItemsForAllColumnByTripId(tripId!);
           const itemsData = tripItems.map((item) => item.items);
@@ -79,39 +83,73 @@ export const FeedBack = () => {
     }
   };
 
-  if (loading) return <p>loading</p>;
+  if (loading) {
+    return (
+      <Flex justify="center" align="center" minH="50vh">
+        <Spinner size="xl" />
+      </Flex>
+    );
+  }
 
   return (
-    <>
-      <p>ログイン中のユーザー：{user?.email}</p>
-      {items?.map((item) => {
-        return (
-          <div key={item.id}>
-            <input
-              type="checkbox"
-              checked={unusedIds.includes(item.id)}
-              onChange={() => handleToggleUnused(item.id)}
-            />
-            <p>{item.name}</p>
-          </div>
-        );
-      })}
-      <button onClick={handleComplete}>ふりかえりを終了する</button>
-      <div>
-        <p>持っていけばよかったアイテムがあれば選択してください</p>
-        {potentialItems?.map((item) => {
-          return (
-            <div key={item.id}>
-              <input
-                type="checkbox"
-                checked={usefulIds.includes(item.id)}
-                onChange={() => handleToggleUseful(item.id)}
-              />
-              <p>{item.name}</p>
-            </div>
-          );
-        })}
-      </div>
-    </>
+    <Box>
+      <Heading size="xl" mb={6}>ふりかえり</Heading>
+      
+      
+
+      <Stack gap={6}>
+        <Card.Root>
+          <Card.Header>
+            <Heading size="md">使わなかったアイテム</Heading>
+            <Text color="gray.500" fontSize="sm">
+              旅行に持っていったが、実際には使わなかったアイテムにチェックを入れてください。
+            </Text>
+          </Card.Header>
+          <Card.Body>
+            <Stack gap={3}>
+              {items?.map((item) => (
+                <Checkbox
+                  key={item.id}
+                  checked={unusedIds.includes(item.id)}
+                  onCheckedChange={() => handleToggleUnused(item.id)}
+                >
+                  <Text fontSize="lg">{item.name}</Text>
+                </Checkbox>
+              ))}
+              {items?.length === 0 && <Text color="gray.500">アイテムがありません</Text>}
+            </Stack>
+          </Card.Body>
+        </Card.Root>
+
+        <Card.Root>
+          <Card.Header>
+            <Heading size="md">追加すればよかったアイテム</Heading>
+            <Text color="gray.500" fontSize="sm">
+              持っていけばよかった・足りなかったアイテムがあれば選択してください。
+            </Text>
+          </Card.Header>
+          <Card.Body>
+            <Stack gap={3}>
+              {potentialItems?.map((item) => (
+                <Checkbox
+                  key={item.id}
+                  checked={usefulIds.includes(item.id)}
+                  onCheckedChange={() => handleToggleUseful(item.id)}
+                >
+                  <Text fontSize="lg">{item.name}</Text>
+                </Checkbox>
+              ))}
+              {potentialItems?.length === 0 && <Text color="gray.500">候補がありません</Text>}
+            </Stack>
+          </Card.Body>
+        </Card.Root>
+        
+        <Box pt={4}>
+          <Button size="lg" colorPalette="blue" w="full" onClick={handleComplete}>
+            ふりかえりを終了する
+          </Button>
+        </Box>
+      </Stack>
+    </Box>
   );
 };
