@@ -1,4 +1,9 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+} from "react-router-dom";
 import { Login } from "./pages/Login";
 import { Signup } from "./pages/Signup";
 import { Trips } from "./pages/Trips";
@@ -8,6 +13,7 @@ import { FeedBack } from "./pages/FeedBack";
 import { Stats } from "./pages/Stats";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { Layout } from "./components/Layout";
+import { NotFound } from "./pages/NotFound";
 
 function App() {
   return (
@@ -56,6 +62,9 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/" element={<Navigate to="/login" />} />
+          <Route path="/404" element={<NotFound />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Layout>
     </Router>
