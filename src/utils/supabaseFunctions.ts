@@ -203,3 +203,16 @@ export const updateCompleted = async (trip_id: string) => {
     .eq("id", trip_id);
   if (error) throw error;
 };
+
+export const getTripByTripId = async (trip_id: string) => {
+  const { data, error } = await supabase
+    .from("trips")
+    .select("*")
+    .eq("id", trip_id)
+    .single();
+  if (error) {
+    throw error;
+  } else {
+    return data;
+  }
+};
