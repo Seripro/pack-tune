@@ -25,6 +25,7 @@ import {
   Spinner,
   HStack,
   IconButton,
+  VStack,
 } from "@chakra-ui/react";
 import { FaTrash, FaPlus } from "react-icons/fa";
 
@@ -43,6 +44,9 @@ export const NewTrips = () => {
   const [newItems, setNewItems] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
+  const [titleError, setTitleError] = useState<string>("");
+  const [startDateError, setStartDateError] = useState<string>("");
+  const [endDateError, setEndDateError] = useState<string>("");
 
   const navigate = useNavigate();
 
@@ -182,10 +186,35 @@ export const NewTrips = () => {
         console.log(e);
       }
     };
-    await addItems();
-    await addTrip();
-    await addTripItems();
-    navigate("/trips");
+    setTitleError("");
+    setStartDateError("");
+    setEndDateError("");
+    let is_ok = true;
+    if (title.trim() === "") {
+      setTitleError("タイトルを入力してください");
+      is_ok = false;
+    }
+
+    if (startDate && endDate && startDate.getTime() > endDate.getTime()) {
+      setStartDateError("終了日は開始日よりも後に設定してください");
+      is_ok = false;
+    } else {
+      if (startDate === undefined || startDate === null) {
+        setStartDateError("開始日を選択してください");
+        is_ok = false;
+      }
+      if (endDate === undefined || endDate === null) {
+        setEndDateError("終了日を選択してください");
+        is_ok = false;
+      }
+    }
+
+    if (is_ok) {
+      await addItems();
+      await addTrip();
+      await addTripItems();
+      navigate("/trips");
+    }
   };
 
   if (loading) {
@@ -213,44 +242,51 @@ export const NewTrips = () => {
               onChange={onChangeTitle}
               placeholder="旅行のタイトルを入力"
             />
+            <p style={{ color: "red" }}>{titleError}</p>
           </Box>
           <Box>
             <Text fontWeight="bold" mb={2}>
               旅行期間
             </Text>
             <HStack justify="space-around">
-              <Box
-                borderWidth="1px"
-                borderRadius="md"
-                p={2}
-                bg="white"
-                w="fit-content"
-              >
-                <DatePicker
-                  locale="ja"
-                  selected={startDate}
-                  onChange={handleStartDateChange}
-                  dateFormatCalendar="yyyy年 MM月"
-                  dateFormat="yyyy/MM/dd"
-                  placeholderText="開始日を選択"
-                />
-              </Box>
-              <Box
-                borderWidth="1px"
-                borderRadius="md"
-                p={2}
-                w="fit-content"
-                bg="white"
-              >
-                <DatePicker
-                  locale="ja"
-                  selected={endDate}
-                  onChange={handleEndDateChange}
-                  dateFormatCalendar="yyyy年 MM月"
-                  dateFormat="yyyy/MM/dd"
-                  placeholderText="終了日を選択"
-                />
-              </Box>
+              <VStack>
+                <Box
+                  borderWidth="1px"
+                  borderRadius="md"
+                  p={2}
+                  bg="white"
+                  w="fit-content"
+                >
+                  <DatePicker
+                    locale="ja"
+                    selected={startDate}
+                    onChange={handleStartDateChange}
+                    dateFormatCalendar="yyyy年 MM月"
+                    dateFormat="yyyy/MM/dd"
+                    placeholderText="開始日を選択"
+                  />
+                </Box>
+                <p style={{ color: "red" }}>{startDateError}</p>
+              </VStack>
+              <VStack>
+                <Box
+                  borderWidth="1px"
+                  borderRadius="md"
+                  p={2}
+                  w="fit-content"
+                  bg="white"
+                >
+                  <DatePicker
+                    locale="ja"
+                    selected={endDate}
+                    onChange={handleEndDateChange}
+                    dateFormatCalendar="yyyy年 MM月"
+                    dateFormat="yyyy/MM/dd"
+                    placeholderText="終了日を選択"
+                  />
+                </Box>
+                <p style={{ color: "red" }}>{endDateError}</p>
+              </VStack>
             </HStack>
           </Box>
         </Stack>
