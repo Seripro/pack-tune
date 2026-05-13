@@ -32,7 +32,11 @@ describe("Signup", () => {
   });
   it("新規登録ボタンがある", async () => {
     const button = await screen.findByRole("button");
-    expect(button).toBeInTheDocument();
+    expect(button).toHaveTextContent("新規登録");
+  });
+  it("ログイン画面へのリンクがある", async () => {
+    const link = await screen.findByRole("link");
+    expect(link).toHaveTextContent("サインインはこちら");
   });
   it("新規登録成功時、メッセージが表示される", async () => {
     (supabase.auth.signUp as Mock).mockResolvedValue({
