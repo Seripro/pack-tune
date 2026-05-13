@@ -14,9 +14,19 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "../utils/supabase";
 import type { User } from "@supabase/supabase-js";
 
-import { Box, Flex, Heading, Text, Input, Button, Stack, Spinner, HStack, IconButton } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Heading,
+  Text,
+  Input,
+  Button,
+  Stack,
+  Spinner,
+  HStack,
+  IconButton,
+} from "@chakra-ui/react";
 import { FaTrash, FaPlus } from "react-icons/fa";
-
 
 const SUGGEST_BORDER: number = 3;
 registerLocale("ja", ja);
@@ -70,14 +80,15 @@ export const NewTrips = () => {
     setTitle(e.target.value);
   };
 
-  const handleDateChange = (dates: [Date | null, Date | null]) => {
-    if (dates[0]) {
-      setStartDate(dates[0]);
-      console.log(dates[0]);
+  const handleStartDateChange = (date: Date | null) => {
+    if (date) {
+      setStartDate(date);
     }
-    if (dates[1]) {
-      setEndDate(dates[1]);
-      console.log(dates[1]);
+  };
+
+  const handleEndDateChange = (date: Date | null) => {
+    if (date) {
+      setEndDate(date);
     }
   };
 
@@ -187,50 +198,110 @@ export const NewTrips = () => {
 
   return (
     <Box>
-      <Heading size="xl" mb={6}>新しい旅行を作成</Heading>
+      <Heading size="xl" mb={6}>
+        新しい旅行を作成
+      </Heading>
 
       <Box bg="white" shadow="md" borderRadius="xl" p={6} mb={6}>
         <Stack gap={4}>
           <Box>
-            <Text fontWeight="bold" mb={2}>旅行タイトル</Text>
-            <Input value={title} onChange={onChangeTitle} placeholder="旅行のタイトルを入力" />
+            <Text fontWeight="bold" mb={2}>
+              旅行タイトル
+            </Text>
+            <Input
+              value={title}
+              onChange={onChangeTitle}
+              placeholder="旅行のタイトルを入力"
+            />
           </Box>
           <Box>
-            <Text fontWeight="bold" mb={2}>旅行期間</Text>
-            <Box borderWidth="1px" borderRadius="md" p={2} w="fit-content" bg="white">
-              <DatePicker
-                locale="ja"
-                selected={startDate}
-                onChange={handleDateChange}
-                dateFormatCalendar="yyyy年 MM月"
-                dateFormat="yyyy/MM/dd"
-                startDate={startDate}
-                endDate={endDate}
-                selectsRange
-                isClearable
-                placeholderText="期間を選択してください"
-              />
-            </Box>
+            <Text fontWeight="bold" mb={2}>
+              旅行期間
+            </Text>
+            <HStack justify="space-around">
+              <Box
+                borderWidth="1px"
+                borderRadius="md"
+                p={2}
+                bg="white"
+                w="fit-content"
+              >
+                <DatePicker
+                  locale="ja"
+                  selected={startDate}
+                  onChange={handleStartDateChange}
+                  dateFormatCalendar="yyyy年 MM月"
+                  dateFormat="yyyy/MM/dd"
+                  placeholderText="開始日を選択"
+                />
+              </Box>
+              <Box
+                borderWidth="1px"
+                borderRadius="md"
+                p={2}
+                w="fit-content"
+                bg="white"
+              >
+                <DatePicker
+                  locale="ja"
+                  selected={endDate}
+                  onChange={handleEndDateChange}
+                  dateFormatCalendar="yyyy年 MM月"
+                  dateFormat="yyyy/MM/dd"
+                  placeholderText="終了日を選択"
+                />
+              </Box>
+            </HStack>
           </Box>
         </Stack>
       </Box>
 
       <HStack align="start" gap={6} flexDir={{ base: "column", md: "row" }}>
         <Box flex="1" bg="white" w="full" shadow="md" borderRadius="xl" p={6}>
-          <Heading size="md" mb={4}>持ち物リスト（スコア{SUGGEST_BORDER}以上）</Heading>
+          <Heading size="md" mb={4}>
+            持ち物リスト（スコア{SUGGEST_BORDER}以上）
+          </Heading>
           <Stack gap={3}>
             {suggestedItems?.map((suggestedItem) => (
-              <Flex key={suggestedItem.id} justify="space-between" align="center" borderWidth="1px" p={2} borderRadius="md">
+              <Flex
+                key={suggestedItem.id}
+                justify="space-between"
+                align="center"
+                borderWidth="1px"
+                p={2}
+                borderRadius="md"
+              >
                 <Text>{suggestedItem.name}</Text>
-                <IconButton aria-label="Delete" size="sm" variant="ghost" colorPalette="red" onClick={() => handleDelete(suggestedItem.id)}>
+                <IconButton
+                  aria-label="Delete"
+                  size="sm"
+                  variant="ghost"
+                  colorPalette="red"
+                  onClick={() => handleDelete(suggestedItem.id)}
+                >
                   <FaTrash />
                 </IconButton>
               </Flex>
             ))}
             {newItems.map((data, index) => (
-              <Flex key={index} justify="space-between" align="center" borderWidth="1px" p={2} borderRadius="md" bg="blue.50" borderColor="blue.100">
+              <Flex
+                key={index}
+                justify="space-between"
+                align="center"
+                borderWidth="1px"
+                p={2}
+                borderRadius="md"
+                bg="blue.50"
+                borderColor="blue.100"
+              >
                 <Text>{data}</Text>
-                <IconButton aria-label="Delete" size="sm" variant="ghost" colorPalette="red" onClick={() => handleDeleteNewItem(index)}>
+                <IconButton
+                  aria-label="Delete"
+                  size="sm"
+                  variant="ghost"
+                  colorPalette="red"
+                  onClick={() => handleDeleteNewItem(index)}
+                >
                   <FaTrash />
                 </IconButton>
               </Flex>
@@ -238,30 +309,59 @@ export const NewTrips = () => {
           </Stack>
 
           <Flex gap={2} mt={4}>
-            <Input value={newItem} onChange={onChangeNewItem} placeholder="新しいアイテムを追加" />
-            <IconButton aria-label="Add" onClick={handleNewItem} colorPalette="blue">
+            <Input
+              value={newItem}
+              onChange={onChangeNewItem}
+              placeholder="新しいアイテムを追加"
+            />
+            <IconButton
+              aria-label="Add"
+              onClick={handleNewItem}
+              colorPalette="blue"
+            >
               <FaPlus />
             </IconButton>
           </Flex>
         </Box>
 
         <Box flex="1" bg="white" shadow="md" w="full" borderRadius="xl" p={6}>
-          <Heading size="md" mb={4}>候補（スコア{SUGGEST_BORDER}未満）</Heading>
+          <Heading size="md" mb={4}>
+            候補（スコア{SUGGEST_BORDER}未満）
+          </Heading>
           <Stack gap={3}>
             {potentialItems?.map((potentialItem) => (
-              <Flex key={potentialItem.id} justify="space-between" align="center" borderWidth="1px" p={2} borderRadius="md">
+              <Flex
+                key={potentialItem.id}
+                justify="space-between"
+                align="center"
+                borderWidth="1px"
+                p={2}
+                borderRadius="md"
+              >
                 <Text>{potentialItem.name}</Text>
-                <Button size="sm" colorPalette="green" onClick={() => handleAdd(potentialItem.id)}>
+                <Button
+                  size="sm"
+                  colorPalette="green"
+                  onClick={() => handleAdd(potentialItem.id)}
+                >
                   追加
                 </Button>
               </Flex>
             ))}
-            {potentialItems?.length === 0 && <Text color="gray.500">候補がありません</Text>}
+            {potentialItems?.length === 0 && (
+              <Text color="gray.500">候補がありません</Text>
+            )}
           </Stack>
         </Box>
       </HStack>
 
-      <Button mt={8} size="lg" colorPalette="blue" w="full" onClick={handleMake}>
+      <Button
+        mt={8}
+        size="lg"
+        colorPalette="blue"
+        w="full"
+        onClick={handleMake}
+      >
         旅行を作成
       </Button>
     </Box>
