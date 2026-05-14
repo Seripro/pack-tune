@@ -4,17 +4,9 @@ import type { TripsType } from "../types/trips";
 import { TripCard } from "../components/TripCard";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../utils/supabase";
-import {
-  Box,
-  Button,
-  Flex,
-  Heading,
-  Spinner,
-  Stack,
-} from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Spinner, Stack } from "@chakra-ui/react";
 
 export const Trips = () => {
-  
   const [trips, setTrips] = useState<TripsType[]>();
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -22,7 +14,7 @@ export const Trips = () => {
     const fetchData = async () => {
       setLoading(true);
       const { data } = await supabase.auth.getUser();
-      
+
       try {
         if (data.user) {
           const tripDatas = await getTripsByUserId(data.user?.id);
@@ -52,13 +44,11 @@ export const Trips = () => {
           <Heading size="xl" mb={2}>
             Trips
           </Heading>
-          
         </Box>
         <Stack direction="row" gap={4}>
           <Button colorPalette="blue" onClick={() => navigate("/trips/new")}>
             新しい旅行
           </Button>
-          
         </Stack>
       </Flex>
 
@@ -72,7 +62,7 @@ export const Trips = () => {
               _hover={{ textDecor: "none" }}
             >
               <Link
-                to={`${trip.id}`}
+                to={`/trips/${trip.id}`}
                 state={{ title: trip.title, is_completed: trip.is_completed }}
               >
                 <TripCard
@@ -86,8 +76,6 @@ export const Trips = () => {
           );
         })}
       </Stack>
-
-      
     </Box>
   );
 };
