@@ -295,7 +295,7 @@ export const NewTrips = () => {
       <HStack align="start" gap={6} flexDir={{ base: "column", md: "row" }}>
         <Box flex="1" bg="white" w="full" shadow="md" borderRadius="xl" p={6}>
           <Heading size="md" mb={4}>
-            持ち物リスト（スコア{SUGGEST_BORDER}以上）
+            持ち物リスト
           </Heading>
           <Stack gap={3}>
             {suggestedItems?.map((suggestedItem) => (
@@ -362,7 +362,7 @@ export const NewTrips = () => {
 
         <Box flex="1" bg="white" shadow="md" w="full" borderRadius="xl" p={6}>
           <Heading size="md" mb={4}>
-            候補（スコア{SUGGEST_BORDER}未満）
+            候補リスト
           </Heading>
           <Stack gap={3}>
             {potentialItems?.map((potentialItem) => (
