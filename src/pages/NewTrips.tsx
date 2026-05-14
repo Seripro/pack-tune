@@ -293,7 +293,15 @@ export const NewTrips = () => {
       </Box>
 
       <HStack align="start" gap={6} flexDir={{ base: "column", md: "row" }}>
-        <Box flex="1" bg="white" w="full" shadow="md" borderRadius="xl" p={6}>
+        <Box
+          flex="1"
+          bg="white"
+          w="full"
+          shadow="md"
+          borderRadius="xl"
+          p={6}
+          data-testid="item-list"
+        >
           <Heading size="md" mb={4}>
             持ち物リスト
           </Heading>
@@ -360,7 +368,15 @@ export const NewTrips = () => {
           </Flex>
         </Box>
 
-        <Box flex="1" bg="white" shadow="md" w="full" borderRadius="xl" p={6}>
+        <Box
+          flex="1"
+          bg="white"
+          shadow="md"
+          w="full"
+          borderRadius="xl"
+          p={6}
+          data-testid="potential-list"
+        >
           <Heading size="md" mb={4}>
             候補リスト
           </Heading>
