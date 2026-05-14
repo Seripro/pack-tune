@@ -141,7 +141,7 @@ export const NewTrips = () => {
           start_date: `${startDate?.getFullYear()}-${(startDate?.getMonth() ?? 0) + 1}-${startDate?.getDate()}`,
           end_date: `${startDate?.getFullYear()}-${(endDate?.getMonth() ?? 0) + 1}-${endDate?.getDate()}`,
         };
-        insertTrip(trip);
+        await insertTrip(trip);
       } catch (e) {
         console.log(e);
       }
